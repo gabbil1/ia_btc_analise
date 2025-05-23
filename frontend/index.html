@@ -7,7 +7,7 @@
 <style>
   body { font-family: Arial, sans-serif; background: #121212; color: #eee; text-align: center; padding: 20px;}
   button { padding: 10px 20px; margin: 10px; font-size: 18px; cursor: pointer; }
-  #log { margin-top: 20px; max-height: 300px; overflow-y: auto; background: #222; padding: 10px; border-radius: 5px; text-align: left; white-space: pre-wrap; }
+  #log { margin-top: 20px; max-height: 400px; overflow-y: auto; background: #222; padding: 10px; border-radius: 5px; text-align: left; white-space: pre-wrap; }
 </style>
 </head>
 <body>
@@ -33,7 +33,7 @@
 
   startBtn.onclick = async () => {
     try {
-      const resp = await fetch('/start', { method: 'POST' });
+      const resp = await fetch('/api/start', { method: 'POST' });
       if(resp.ok) {
         log("Execução iniciada.");
         startBtn.disabled = true;
@@ -49,7 +49,7 @@
 
   stopBtn.onclick = async () => {
     try {
-      const resp = await fetch('/stop', { method: 'POST' });
+      const resp = await fetch('/api/stop', { method: 'POST' });
       if(resp.ok) {
         log("Execução parada.");
         startBtn.disabled = false;
@@ -64,7 +64,7 @@
   };
 
   function openWebSocket() {
-    ws = new WebSocket(`ws://${location.host}/ws`);
+    ws = new WebSocket(`ws://${location.host}/api/ws`);
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       let texto = `Timestamp: ${data.timestamp}\nSinal: ${data.sinal.toUpperCase()}\nCapital: R$ ${data.capital.toFixed(2)}\nBTC em posse: ${data.btc_posicao.toFixed(6)}\nPreço entrada: R$ ${data.preco_entrada.toFixed(2)}\n---\nÚltimas operações:\n`;
@@ -74,7 +74,12 @@
       log(texto);
     };
     ws.onclose = () => {
-      log("Conexão WebSocket fechada.");
+      log("Conexão WebSocket fechada. Tentando reconectar em 3s...");
+      setTimeout(openWebSocket, 3000);
+    };
+    ws.onerror = () => {
+      log("Erro na conexão WebSocket.");
+      ws.close();
     };
   }
 </script>

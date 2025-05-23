@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IA Análise BTC</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #121212; color: #eee; text-align: center; padding: 20px;}
+  button { padding: 10px 20px; margin: 10px; font-size: 18px; cursor: pointer; }
+  #log { margin-top: 20px; max-height: 300px; overflow-y: auto; background: #222; padding: 10px; border-radius: 5px; text-align: left; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+
+<h1>IA Análise BTC - Controle</h1>
+<button id="startBtn">Iniciar</button>
+<button id="stopBtn" disabled>Parar</button>
+
+<div id="log"></div>
+
+<script>
+  let ws;
+  const logDiv = document.getElementById('log');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  function log(msg) {
+    const p = document.createElement('p');
+    p.textContent = msg;
+    logDiv.appendChild(p);
+    logDiv.scrollTop = logDiv.scrollHeight;
+  }
+
+  startBtn.onclick = async () => {
+    try {
+      const resp = await fetch('/start', { method: 'POST' });
+      if(resp.ok) {
+        log("Execução iniciada.");
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        openWebSocket();
+      } else {
+        log("Erro ao iniciar.");
+      }
+    } catch(e) {
+      log("Erro: " + e.message);
+    }
+  };
+
+  stopBtn.onclick = async () => {
+    try {
+      const resp = await fetch('/stop', { method: 'POST' });
+      if(resp.ok) {
+        log("Execução parada.");
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        if(ws) ws.close();
+      } else {
+        log("Erro ao parar.");
+      }
+    } catch(e) {
+      log("Erro: " + e.message);
+    }
+  };
+
+  function openWebSocket() {
+    ws = new WebSocket(`ws://${location.host}/ws`);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      let texto = `Timestamp: ${data.timestamp}\nSinal: ${data.sinal.toUpperCase()}\nCapital: R$ ${data.capital.toFixed(2)}\nBTC em posse: ${data.btc_posicao.toFixed(6)}\nPreço entrada: R$ ${data.preco_entrada.toFixed(2)}\n---\nÚltimas operações:\n`;
+      data.historico_resultados.forEach(op => {
+        texto += `${op.timestamp} - ${op.acao.toUpperCase()} - Preço: R$${op.preco.toFixed(2)} - Capital: R$${op.capital?.toFixed(2) || '-'} - Lucro: R$${op.lucro?.toFixed(2) || '-'}\n`;
+      });
+      log(texto);
+    };
+    ws.onclose = () => {
+      log("Conexão WebSocket fechada.");
+    };
+  }
+</script>
+
+</body>
+</html>

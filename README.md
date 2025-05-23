@@ -53,32 +53,48 @@ Execução: decisões de trading automatizadas com base na previsão do modelo.
 Persistência: histórico de operações e capital atual gravados em CSV.
 
 🔧 Como executar o projeto
-Clone o repositório:
 
-bash
-Copiar código
+1. Clone o repositório:
+```bash
 git clone https://github.com/seuusuario/seuprojeto.git
 cd seuprojeto
-Instale as dependências:
+```
 
-bash
-Copiar código
+2. Crie e ative um ambiente virtual (recomendado):
+```bash
+# Windows
+python -m venv venv
+.\venv\Scripts\activate
+
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Instale as dependências:
+```bash
 pip install -r requirements.txt
-Configure os parâmetros iniciais (opcional):
+```
 
-Capital inicial (capital = 800.0).
+4. Configure os parâmetros iniciais (opcional):
+- Capital inicial (capital = 800.0)
+- Par de trading (BTC/USDT)
+- Timeframe (1h)
+- Número de dias de histórico (dias = 365)
 
-Par de trading (BTC/USDT).
+5. Execute o servidor:
+```bash
+# Navegue até o diretório do projeto
+cd ia_btc_analise
 
-Timeframe (1h).
+# Inicie o servidor
+python -m uvicorn backend:app --reload
+```
 
-Número de dias de histórico (dias = 365).
+6. Acesse a aplicação:
+- Interface web: http://localhost:8000/static/index.html
+- Documentação da API: http://localhost:8000/docs
 
-Execute o script:
-
-bash
-Copiar código
-python seu_script.py
 📊 Arquivos gerados
 historico_btc.csv → Histórico com indicadores.
 

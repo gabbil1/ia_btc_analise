@@ -145,3 +145,46 @@ Este projeto está licenciado sob a MIT License.
 Contribuições são bem-vindas!
 Para contribuir, abra uma issue ou envie um pull request.
 
+# Como rodar o Frontend SPA (React + Vite + Tailwind)
+
+1. Instale o Node.js (recomendado versão 18+): https://nodejs.org/
+
+2. No terminal, navegue até a pasta do projeto e execute:
+
+```bash
+cd frontend
+npm install
+npm install axios react-chartjs-2 chart.js tailwindcss postcss autoprefixer
+```
+
+Se o comando `npx tailwindcss init -p` não funcionar, os arquivos de configuração já estão criados manualmente.
+
+3. Para rodar o frontend em modo desenvolvimento:
+
+```bash
+npm run dev
+```
+
+4. Acesse em http://localhost:5173
+
+---
+
+## Stack utilizada
+- React (SPA, via Vite)
+- TailwindCSS (estilização)
+- Chart.js (gráficos, via react-chartjs-2)
+- Axios (requisições HTTP)
+
+---
+
+## Integração com o backend
+O frontend consome os endpoints REST do backend FastAPI:
+- `/api/train` — treinar modelo
+- `/api/predict` — previsão
+- `/api/update_data` — atualizar dados
+- `/api/model_info` — consultar métricas/modelo
+
+---
+
+Para dúvidas ou problemas, consulte as instruções acima ou abra uma issue.
+
